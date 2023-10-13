@@ -25,7 +25,7 @@ set_session(sess)  # set this TensorFlow session as the default session for Kera
 # Config
 height = constants.SIZES['basic']
 width = height
-weights_file = "weights.best_mobilenet" + str(height) + ".hdf5"
+weights_file = f"weights.best_mobilenet{str(height)}.hdf5"
 
 conv_base = MobileNetV2(
     weights='imagenet', 
@@ -90,4 +90,4 @@ history = model.fit_generator(
 
 # Save it for later
 print('Saving Model')
-model.save("nsfw_mobilenet2." + str(width) + "x" + str(height) + ".h5")
+model.save(f"nsfw_mobilenet2.{str(width)}x{str(height)}.h5")

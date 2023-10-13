@@ -36,9 +36,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 REQUIRED = []
 try:
     with io.open(os.path.join(here, 'requirements.txt'), encoding='utf-8') as f:
-        for line_req in f:
-            if line_req[0] != '#':
-                REQUIRED.append(line_req.strip())
+        REQUIRED.extend(line_req.strip() for line_req in f if line_req[0] != '#')
 except FileNotFoundError:
     REQUIRED = []
 

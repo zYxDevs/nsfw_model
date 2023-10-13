@@ -55,7 +55,7 @@ class keras_predictor():
             image_paths = [image_paths]
 
         loaded_images, loaded_image_paths = load_images(image_paths, image_size)
-        
+
         if not loaded_image_paths:
             return {}
 
@@ -69,18 +69,16 @@ class keras_predictor():
             for j, pred in enumerate(single_preds):
                 single_probs.append(model_preds[i][pred])
                 preds[i][j] = categories[pred]
-            
+
             probs.append(single_probs)
 
-        
-        images_preds = {}
-        
-        for i, loaded_image_path in enumerate(loaded_image_paths):
-            images_preds[loaded_image_path] = {}
-            for _ in range(len(preds[i])):
-                images_preds[loaded_image_path][preds[i][_]] = probs[i][_]
 
-        return images_preds
+        return {
+            loaded_image_path: {
+                preds[i][_]: probs[i][_] for _ in range(len(preds[i]))
+            }
+            for i, loaded_image_path in enumerate(loaded_image_paths)
+        }
 
 
 if __name__ == '__main__':

@@ -29,7 +29,7 @@ def make_callbacks(weights_file):
         filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 
     # Update info
-    tensorboard = TensorBoard(log_dir="logs/{}".format(time()))
+    tensorboard = TensorBoard(log_dir=f"logs/{time()}")
 
     # learning rate schedule
     lr_scheduler = LearningRateScheduler(schedule)

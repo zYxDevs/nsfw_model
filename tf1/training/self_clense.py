@@ -25,7 +25,7 @@ file_type = "jpg"
 
 
 def process_batch(batch_x, batch_y):
-    print("Batch Check " + str(file_count))
+    print(f"Batch Check {str(file_count)}")
     # Convert the list of images to a numpy array
     x_array = np.array(batch_x)
 
@@ -44,10 +44,10 @@ def copy_all_failures():
     for file_info in mistakes:
         os.rename(file_info["path"], base_dir + "\\" + group + "\\mistakes\\" + str(file_info["filename"]))
 
-print("Starting Self-clense for " + categories[category_id])
+print(f"Starting Self-clense for {categories[category_id]}")
 # Load the data set by looping over every image file in path
 for image_file in Path(base_dir + "\\" + group + "\\" +
-                       categories[category_id]).glob("**/*." + file_type):
+                       categories[category_id]).glob(f"**/*.{file_type}"):
     file_info = {"path": image_file, "filename": os.path.basename(image_file)}
 
     top = (page + 1) * batch_size
@@ -74,6 +74,8 @@ for image_file in Path(base_dir + "\\" + group + "\\" +
         x_test = []
         y_test = []
 
-process_batch(x_test, y_test)     
-copy_all_failures()   
-print('Out of ' + str(file_count) + ' images of "' + str(categories[category_id]) + '" ' + str(len(mistakes)) + ' are mistaken as "' + str(categories[mistaken_as]) + '"')
+process_batch(x_test, y_test)
+copy_all_failures()
+print(
+    f'Out of {str(file_count)} images of "{str(categories[category_id])}" {len(mistakes)} are mistaken as "{str(categories[mistaken_as])}"'
+)

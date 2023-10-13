@@ -12,13 +12,11 @@ test_dir = 'D:\\nswf_model_training_data\\data\\test'
 image_size = 299
 x_test = []
 y_test = []
-file_count = 0
 update_frequency = 1000
 
 class_names = ['drawings', 'hentai', 'neutral', 'porn', 'sexy']
 
-for image_file in Path(test_dir).glob("**/*.jpg"):
-    file_count += 1
+for file_count, image_file in enumerate(Path(test_dir).glob("**/*.jpg"), start=1):
     # Load the current image file
     image_data = image.load_img(image_file, target_size=(image_size, image_size))
 
@@ -34,7 +32,7 @@ for image_file in Path(test_dir).glob("**/*.jpg"):
     y_test.append(class_names.index(folder_name))
 
     if file_count % update_frequency == 0:
-        print("Processed " + str(file_count) + " - Current Folder: " + folder_name)
+        print(f"Processed {file_count} - Current Folder: {folder_name}")
 
 
 def plot_confusion_matrix(cm, classes,
