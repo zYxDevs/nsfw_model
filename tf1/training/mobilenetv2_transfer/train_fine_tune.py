@@ -22,10 +22,10 @@ set_session(sess)  # set this TensorFlow session as the default session for Kera
 # Config
 height = constants.SIZES['basic']
 width = height
-weights_file = "weights.best_mobilenet" + str(height) + ".hdf5"
+weights_file = f"weights.best_mobilenet{str(height)}.hdf5"
 
 print ('Starting from last full model run')
-model = load_model("nsfwnsfw_mobilenet2." + str(width) + "x" + str(height) + ".h5")
+model = load_model(f"nsfwnsfw_mobilenet2.{str(width)}x{str(height)}.h5")
 
 # Unlock a few layers deep in Mobilenet v2
 model.trainable = False
@@ -33,11 +33,7 @@ set_trainable = False
 for layer in model.layers:
     if layer.name == 'block_11_expand':
         set_trainable = True
-    if set_trainable:
-        layer.trainable = True
-    else:
-        layer.trainable = False
-
+    layer.trainable = bool(set_trainable)
 # Let's see it
 print('Summary')
 print(model.summary())
@@ -76,4 +72,4 @@ history = model.fit_generator(
 
 # Save it for later
 print('Saving Model')
-model.save("nsfwnsfw_mobilenet2." + str(width) + "x" + str(height) + ".h5")
+model.save(f"nsfwnsfw_mobilenet2.{str(width)}x{str(height)}.h5")

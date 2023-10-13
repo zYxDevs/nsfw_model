@@ -102,13 +102,13 @@ def configure_optimizer(hparams):
 			learning_rate_power=hparams.ftrl_learning_rate_power,
 			initial_accumulator_value=hparams.ftrl_initial_accumulator_value,
 			l1_regularization_strength=hparams.ftrl_l1,
-			l2_regularization_strength=hparams.ftrl_l2)  
+			l2_regularization_strength=hparams.ftrl_l2)
 	elif hparams.optimizer == 'rmsprop':
-		optimizer = tf.keras.optimizers.RMSprop(learning_rate=hparams.learning_rate, epsilon=hparams.opt_epsilon, momentum=hparams.rmsprop_momentum)	
+		optimizer = tf.keras.optimizers.RMSprop(learning_rate=hparams.learning_rate, epsilon=hparams.opt_epsilon, momentum=hparams.rmsprop_momentum)
 	elif hparams.optimizer == 'sgd':
 		optimizer = tf.keras.optimizers.SGD(learning_rate=hparams.learning_rate, momentum=hparams.momentum)
 	else:
-		raise ValueError('Optimizer [%s] was not recognized' % hparams.optimizer)
+		raise ValueError(f'Optimizer [{hparams.optimizer}] was not recognized')
 	return optimizer
 
 
@@ -246,7 +246,7 @@ def _image_size_for_module(module_layer, requested_image_size=None):
 	module_image_size = tuple(
 	module_layer._func.__call__	# pylint:disable=protected-access
 	.concrete_functions[0].structured_input_signature[0][0].shape[1:3])
-	
+
 	if requested_image_size is None:
 		if None in module_image_size:
 			raise ValueError("Must specify an image size because "
@@ -260,10 +260,9 @@ def _image_size_for_module(module_layer, requested_image_size=None):
 	if requested_image_size.is_compatible_with(module_image_size):
 		return tuple(requested_image_size.as_list())
 	else:
-		raise ValueError("The selected TF Hub module expects image size {}, "
-						 "but size {} is requested".format(
-							 module_image_size,
-							 tuple(requested_image_size.as_list())))
+		raise ValueError(
+			f"The selected TF Hub module expects image size {module_image_size}, but size {tuple(requested_image_size.as_list())} is requested"
+		)
 
 
 def build_model(module_layer, hparams, image_size, num_classes):
@@ -378,7 +377,7 @@ def model_to_frozen_graph(model):
 
 	input_nodes = input_graph.node
 	names_to_remove = {}
-	
+
 	# We're going to clean up some junk nodes that we do not
 	# need outside of training. I assume these are inherited
 	# from tensorflow hub.
@@ -400,8 +399,8 @@ def model_to_frozen_graph(model):
 	for node in input_nodes:
 		noOutput = True
 		for inner in input_nodes:
-			resa = [i for i in inner.input if node.name.upper() in i.upper()] 
-			if len(resa) > 0:
+			resa = [i for i in inner.input if node.name.upper() in i.upper()]
+			if resa:
 				noOutput = False
 
 		if noOutput is True:
@@ -415,9 +414,9 @@ def model_to_frozen_graph(model):
 			# Find all nodes of type Identity that are connected to a Softmax (our output)
 			found = [i for i in node.input if 'softmax'.upper() in i.upper()] 
 
-			if found is not None and len(found) > 0:
+			if found is not None and found:
 				names_to_remove[node.name] = True
-			
+
 	# The rest of this code is basically a straight-copy-and-paste from
 	# the remove_nodes function of TF1.
 	nodes_after_removal = []
@@ -499,12 +498,11 @@ def make_image_classifier(tfhub_module, image_dir, hparams,
 	print("Using hparams:")
 	for key, value in hparams._asdict().items():
 		print("\t{0} : {1}".format(key, value))
-		
+
 	module_layer = hub.KerasLayer(tfhub_module, trainable=hparams.do_fine_tuning)
-	
+
 	image_size = _image_size_for_module(module_layer, requested_image_size)
-	print("Using module {} with image size {}".format(
-		tfhub_module, image_size))
+	print(f"Using module {tfhub_module} with image size {image_size}")
 	train_data_and_size, valid_data_and_size, labels = _get_data_with_keras(
 		image_dir, image_size, hparams.batch_size, hparams.validation_split, hparams.do_data_augmentation)
 	print("Found", len(labels), "classes:", ", ".join(labels))
@@ -548,7 +546,7 @@ def make_image_classifier(tfhub_module, image_dir, hparams,
 
 	# Clean up temp weights file
 	os.remove(tempModelWeightsFile)
-	
+
 	# 5 - Pass model to lib.model_to_frozen_graph.
 	frozen_inference_graph = model_to_frozen_graph(model)
 
